@@ -11,6 +11,9 @@ interface NoteDao {
     @Insert
     suspend fun insertNote(noteEntity: NoteEntity)
 
+    @Query("SELECT * FROM NoteEntity WHERE title=:title")
+    fun searchNotesByTitle(title: String): Flow<List<NoteEntity>>
+
     @Query("SELECT * FROM NoteEntity")
     fun getAllNotesAsFlow(): Flow<List<NoteEntity>>
 

@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.zfml.kmpnoteappcleanarchitecture.app.Route
+import com.zfml.kmpnoteappcleanarchitecture.presentation.notes.NoteListScreenRoot
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,7 +38,7 @@ fun App() {
             startDestination = Route.NoteList
         ) {
             composable<Route.NoteList>{
-                Text("I am Note List")
+                NoteListScreenRoot()
             }
         }
     }
