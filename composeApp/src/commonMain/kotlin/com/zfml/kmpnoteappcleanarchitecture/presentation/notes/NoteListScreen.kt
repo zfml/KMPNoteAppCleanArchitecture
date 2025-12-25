@@ -59,6 +59,9 @@ fun NoteListScreenRoot(
         onToggleAddNoteDialog = { isShowDialog ->
             viewModel.toggleAddNoteDialog(isShowDialog)
         },
+        onDeleteNote = { note ->
+            viewModel.deleteNote(note)
+        }
     )
 
 
@@ -70,6 +73,7 @@ fun NoteListScreenRoot(
 fun NoteListScreen(
     state: NoteListState,
     onCreateNote: (Note) -> Unit,
+    onDeleteNote: (Note) -> Unit,
     onToggleAddNoteDialog: (Boolean) -> Unit
 ) {
     Scaffold(
@@ -119,7 +123,6 @@ fun NoteListScreen(
                 if (isEmpty) {
                     EmptyNotePlaceholder()
                 } else {
-                    // Modern Grid Layout
                     LazyVerticalStaggeredGrid(
                         columns = StaggeredGridCells.Fixed(2),
                         modifier = Modifier.fillMaxSize(),
@@ -128,7 +131,10 @@ fun NoteListScreen(
                         verticalItemSpacing = 10.dp
                     ) {
                         items(state.noteList) { note ->
-                            NoteItem(note)
+                            NoteItem(
+                                note,
+                                onDeleteNote = onDeleteNote
+                            )
                         }
                     }
                 }

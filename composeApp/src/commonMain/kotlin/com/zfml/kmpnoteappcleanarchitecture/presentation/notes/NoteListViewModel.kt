@@ -61,6 +61,12 @@ class NoteListViewModel(
         _showDialog.value = isShowDialog
     }
 
+    fun deleteNote(note: Note) {
+        viewModelScope.launch {
+            noteRepository.deleteNote(note)
+        }
+    }
+
 
 
 

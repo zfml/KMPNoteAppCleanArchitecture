@@ -35,6 +35,12 @@ class NoteRepositoryImpl(
             Result.failure(e)
         }
 
+    override suspend fun deleteNote(note: Note): Result<Unit> = try {
+        noteDao.deleteNote(noteEntity = note.toNoteEntity())
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
 
     override suspend fun getNoteById(id: Long): Result<Note> = try {
