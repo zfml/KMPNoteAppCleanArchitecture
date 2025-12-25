@@ -46,7 +46,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NoteListScreenRoot(
-    viewModel: NoteListViewModel = koinViewModel<NoteListViewModel>()
+    viewModel: NoteListViewModel = koinViewModel<NoteListViewModel>(),
+    navigateToCreateNoteScreen: (Long) -> Unit
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -54,10 +55,11 @@ fun NoteListScreenRoot(
     NoteListScreen(
         state,
         onCreateNote = { note ->
-            viewModel.addNote(note)
+//            viewModel.addNote(note)
         },
-        onToggleAddNoteDialog = { isShowDialog ->
-            viewModel.toggleAddNoteDialog(isShowDialog)
+
+        navigateToCreateNoteScreen = { nodeId ->
+            navigateToCreateNoteScreen(nodeId)
         },
         onDeleteNote = { note ->
             viewModel.deleteNote(note)
@@ -74,7 +76,7 @@ fun NoteListScreen(
     state: NoteListState,
     onCreateNote: (Note) -> Unit,
     onDeleteNote: (Note) -> Unit,
-    onToggleAddNoteDialog: (Boolean) -> Unit
+    navigateToCreateNoteScreen: (Long) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -90,7 +92,9 @@ fun NoteListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onToggleAddNoteDialog(true) },
+                onClick = {
+                    navigateToCreateNoteScreen(-1)
+                },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
@@ -98,21 +102,6 @@ fun NoteListScreen(
             }
         }
     ) { paddingValues ->
-
-        // 1. Dialog Logic
-        if (state.isAddNoteDialogOpen) {
-            AddNoteDialog(
-                onDismiss = { onToggleAddNoteDialog(false) },
-                onConfirm = { title, content ->
-                    onCreateNote(
-                        Note(
-                            title = title,
-                            content = content,
-                        )
-                    )
-                }
-            )
-        }
 
         Box(
             modifier = Modifier

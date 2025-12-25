@@ -5,6 +5,7 @@ import com.zfml.kmpnoteappcleanarchitecture.data.local.DatabaseFactory
 import com.zfml.kmpnoteappcleanarchitecture.data.local.NoteDatabase
 import com.zfml.kmpnoteappcleanarchitecture.data.repository.NoteRepositoryImpl
 import com.zfml.kmpnoteappcleanarchitecture.domain.repository.NoteRepository
+import com.zfml.kmpnoteappcleanarchitecture.presentation.note_details.CreateNoteViewModel
 import com.zfml.kmpnoteappcleanarchitecture.presentation.notes.NoteListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -32,6 +33,7 @@ val sharedModule = module {
     singleOf(::NoteRepositoryImpl).bind<NoteRepository>()
 
     viewModelOf(::NoteListViewModel)
+    viewModelOf(::CreateNoteViewModel)
 
 
 }

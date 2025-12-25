@@ -17,30 +17,28 @@ import kotlinx.coroutines.launch
 
 class NoteListViewModel(
     private val noteRepository: NoteRepository
-): ViewModel(){
+) : ViewModel() {
 
-    private val _showDialog = MutableStateFlow(false)
-    val uiState: StateFlow<NoteListState> = combine(
-        noteRepository.getAllNotes(),
-        _showDialog){ result,showDialog ->
+    val uiState: StateFlow<NoteListState> = noteRepository.getAllNotes()
+        .map { result ->
             result.fold(
-                onSuccess = {notes ->
+                onSuccess = { notes ->
                     NoteListState(
-                    noteList = notes,
-                    isLoading = false,
-                    errorMessage = "",
-                    isAddNoteDialogOpen = showDialog
-                )},
-                onFailure = {error ->
+                        noteList = notes,
+                        isLoading = false,
+                        errorMessage = ""
+                    )
+                },
+                onFailure = { error ->
                     NoteListState(
                         noteList = emptyList(),
                         isLoading = false,
-                        errorMessage = error.message.toString(),
-                        isAddNoteDialogOpen = showDialog
-                        )
+                        errorMessage = error.message.toString()
+                    )
                 }
             )
-        }.onStart {
+        }
+        .onStart {
             emit(NoteListState(isLoading = true))
         }
         .stateIn(
@@ -49,26 +47,9 @@ class NoteListViewModel(
             initialValue = NoteListState(isLoading = true)
         )
 
-
-    fun addNote(note: Note) {
-        viewModelScope.launch {
-            noteRepository.insertNote(note)
-            _showDialog.value = false
-        }
-    }
-
-    fun toggleAddNoteDialog(isShowDialog: Boolean) {
-        _showDialog.value = isShowDialog
-    }
-
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             noteRepository.deleteNote(note)
         }
     }
-
-
-
-
-
 }
