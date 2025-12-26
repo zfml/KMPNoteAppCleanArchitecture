@@ -1,8 +1,5 @@
 package com.zfml.kmpnoteappcleanarchitecture.presentation.note_details
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +10,7 @@ import com.zfml.kmpnoteappcleanarchitecture.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateNoteViewModel(
@@ -27,19 +25,58 @@ class CreateNoteViewModel(
     val uiState: StateFlow<CreateNoteUiState> = _uiState.asStateFlow()
 
 
-    var noteId by mutableStateOf("")
     init {
-        noteId = noteIdArgs.id.toString()
+        val noteId = noteIdArgs.id
+        if(noteId != -1L) {
+            loadNote(noteId)
+        }
     }
 
-    fun createNote(note: Note) {
+    private fun loadNote(noteId: Long) {
         viewModelScope.launch {
-            val result = noteRepository.insertNote(note)
-            if(result.isSuccess) {
-                _uiState.value = _uiState.value.copy(isSuccess = true)
-            } else {
-                _uiState.value = _uiState.value.copy(isSuccess = false, errorMessage = "Something went wrong!")
+            noteRepository.getNoteById(noteId).onSuccess { note ->
+                _uiState.update {
+                    it.copy(
+                        title = note.title,
+                        description = note.description,
+                        isEditing = true
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        errorMessage = error.message.toString()
+                    )
+                }
             }
+        }
+    }
+
+    fun onTitleChange(newTitle: String) {
+        _uiState.update { it.copy(title = newTitle) }
+    }
+
+    fun onDescriptionChange(newDescription: String) {
+        _uiState.update { it.copy(description = newDescription) }
+    }
+
+
+    fun saveNote() {
+
+        val currentState = _uiState.value
+        viewModelScope.launch {
+            val note = Note(
+                id = if(noteIdArgs.id == -1L) 0 else noteIdArgs.id,
+                title = currentState.title,
+                description = currentState.description
+            )
+            noteRepository.insertNote(note)
+                .onSuccess {
+                    _uiState.update { it.copy(isSuccess = true) }
+                }
+                .onFailure { error ->
+                    _uiState.update { it.copy(errorMessage = error.message.toString())  }
+                }
         }
     }
 
@@ -47,6 +84,9 @@ class CreateNoteViewModel(
 }
 
 data class CreateNoteUiState(
+    val title: String = "",
+    val description: String = "",
     val errorMessage: String = "",
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val isEditing: Boolean = false
 )

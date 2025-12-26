@@ -4,15 +4,16 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 import com.zfml.kmpnoteappcleanarchitecture.data.local.model.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
-    @Insert
+    @Upsert
     suspend fun insertNote(noteEntity: NoteEntity)
 
-    @Query("SELECT * FROM NoteEntity WHERE title=:title")
+    @Query("SELECT * FROM NoteEntity WHERE title LIKE '%' || :title || '%'")
     fun searchNotesByTitle(title: String): Flow<List<NoteEntity>>
 
     @Query("SELECT * FROM NoteEntity")

@@ -4,7 +4,8 @@ import com.zfml.kmpnoteappcleanarchitecture.domain.model.Note
 
 data class NoteListState(
     val noteList: List<Note> = emptyList(),
+    val searchQuery: String = "",
     val isLoading: Boolean = true,
     val errorMessage: String = "",
-    val isAddNoteDialogOpen: Boolean = false
+    val isSearching: Boolean = false
 )

@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -37,7 +35,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zfml.kmpnoteappcleanarchitecture.domain.model.Note
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,15 +50,25 @@ fun CreateNoteScreenRoot(
             navigateToNoteListScreen()
         }
     }
-    CreateNoteScreen( onSaveNote = { note ->
-        viewModel.createNote(note)
-    })
+    CreateNoteScreen(
+        uiState = uiState,
+        navigateToNoteListScreen = navigateToNoteListScreen,
+        onSaveNote = {  viewModel.saveNote() },
+        onTitleChange = {viewModel.onTitleChange(it)},
+        onDescriptionChange = {viewModel.onDescriptionChange(it)}
+    )
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNoteScreen(
-    onSaveNote: (Note) -> Unit
+    uiState: CreateNoteUiState,
+    onSaveNote: () -> Unit,
+    navigateToNoteListScreen: () -> Unit,
+    onTitleChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit
 ) {
     // State for text fields
     var title by remember { mutableStateOf("") }
@@ -72,7 +79,7 @@ fun CreateNoteScreen(
             TopAppBar(
                 title = { Text("") }, // Minimalist look, often no title in TopBar
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back */ }) {
+                    IconButton(onClick = { navigateToNoteListScreen()}) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -81,7 +88,7 @@ fun CreateNoteScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onSaveNote(Note(title = title, content = description))
+                    onSaveNote()
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -100,9 +107,9 @@ fun CreateNoteScreen(
         ) {
             // Note Title Input
             TransparentHintTextField(
-                text = title,
+                text = uiState.title,
                 hint = "Title",
-                onValueChange = { title = it },
+                onValueChange = onTitleChange,
                 textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 singleLine = true
             )
@@ -111,9 +118,9 @@ fun CreateNoteScreen(
 
             // Note Description Body
             TransparentHintTextField(
-                text = description,
+                text = uiState.description,
                 hint = "Start typing your note...",
-                onValueChange = { description = it },
+                onValueChange = onDescriptionChange,
                 textStyle = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.fillMaxHeight()
             )
