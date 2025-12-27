@@ -1,6 +1,7 @@
 package com.zfml.kmpnoteappcleanarchitecture.presentation.notes.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,12 +43,18 @@ import com.zfml.kmpnoteappcleanarchitecture.domain.model.Note
 @Composable
 fun NoteItem(
     note: Note,
-    onDeleteNote: (Note) -> Unit
+    onDeleteNote: (Note) -> Unit,
+    navigateToCreateNoteScreen: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable{
+                navigateToCreateNoteScreen()
+            }
+        ,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
@@ -67,7 +74,7 @@ fun NoteItem(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = note.content,
+                text = note.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 6,

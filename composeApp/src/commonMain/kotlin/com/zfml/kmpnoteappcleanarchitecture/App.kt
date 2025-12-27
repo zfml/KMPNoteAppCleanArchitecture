@@ -3,6 +3,7 @@ package com.zfml.kmpnoteappcleanarchitecture
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +18,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.zfml.kmpnoteappcleanarchitecture.app.Route
+import com.zfml.kmpnoteappcleanarchitecture.presentation.note_details.CreateNoteScreenRoot
 import com.zfml.kmpnoteappcleanarchitecture.presentation.notes.NoteListScreenRoot
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -38,8 +41,20 @@ fun App() {
             startDestination = Route.NoteList
         ) {
             composable<Route.NoteList>{
-                NoteListScreenRoot()
+                NoteListScreenRoot(
+                    navigateToCreateNoteScreen = { notedId ->
+                        navController.navigate(Route.NoteDetail(id = notedId))
+                    }
+                )
+            }
+            composable<Route.NoteDetail>{
+                CreateNoteScreenRoot(
+                    navigateToNoteListScreen = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
+
     }
 }

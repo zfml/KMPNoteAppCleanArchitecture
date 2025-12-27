@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
 
-    suspend fun searchNote(searchQuery: String): Flow<Result<List<Note>>>
+     fun searchNote(searchQuery: String): Flow<Result<List<Note>>>
 
      fun getAllNotes(): Flow<Result<List<Note>>>
 

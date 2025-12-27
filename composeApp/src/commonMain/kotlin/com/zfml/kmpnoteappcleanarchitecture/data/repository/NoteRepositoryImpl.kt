@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 class NoteRepositoryImpl(
     private val noteDao: NoteDao
 ): NoteRepository {
-    override suspend fun searchNote(searchQuery: String): Flow<Result<List<Note>>> =
+    override  fun searchNote(searchQuery: String): Flow<Result<List<Note>>> =
         noteDao.searchNotesByTitle(title = searchQuery).map {
             noteEntities ->
             Result.success(noteEntities.map { it.toNote() })
