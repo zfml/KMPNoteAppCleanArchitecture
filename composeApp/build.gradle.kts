@@ -29,7 +29,6 @@ kotlin {
             linkerOpts.add("-lsqlite3")
         }
     }
-
     room {
         schemaDirectory("$projectDir/schemas")
     }

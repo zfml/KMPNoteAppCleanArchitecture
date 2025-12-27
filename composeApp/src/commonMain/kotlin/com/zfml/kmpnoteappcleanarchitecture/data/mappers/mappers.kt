@@ -6,13 +6,13 @@ import com.zfml.kmpnoteappcleanarchitecture.domain.model.Note
 fun NoteEntity.toNote() = Note(
     id = id,
     title = title,
-    description = content,
+    description = description,
     createdDate = createdDate
 )
 
 fun Note.toNoteEntity() = NoteEntity(
     id = id,
     title = title,
-    content = description,
+    description = description,
     createdDate = createdDate
 )
